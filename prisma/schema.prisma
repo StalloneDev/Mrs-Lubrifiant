@@ -1,0 +1,528 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ======================================
+// ENUMS
+// ======================================
+
+enum Role {
+  ADMIN
+  COMMERCIAL
+  DELIVERY
+  MANAGER
+}
+
+enum WarehouseType {
+  CENTRAL
+  VIRTUAL_PARTNER
+}
+
+enum PartnerType {
+  MECHANIC
+  SHOP
+}
+
+enum PartnerStatus {
+  PENDING
+  ACTIVE
+  DORMANT
+  SUSPENDED
+}
+
+enum DeliveryStatus {
+  CREATED
+  ASSIGNED
+  IN_PROGRESS
+  DELIVERED
+  CONFIRMED
+  DISPUTED
+  CANCELLED
+}
+
+enum MovementType {
+  IN
+  OUT
+  TRANSFER
+  DELIVERY_OUT
+  DELIVERY_PENDING
+  CONSIGNMENT_ACTIVE
+  CONSIGNMENT_SOLD
+  RETURN
+  ADJUSTMENT
+}
+
+enum SaleType {
+  DIRECT
+  CONSIGNMENT_DECLARED
+}
+
+enum SaleStatus {
+  DRAFT
+  VALIDATED
+  INVOICED
+  PAID
+  PARTIALLY_PAID
+  CANCELLED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  PARTIALLY_PAID
+  CANCELLED
+}
+
+enum PaymentChannel {
+  CASH
+  MOBILE_MONEY_MTN
+  MOBILE_MONEY_MOOV
+  BANK
+  CHECK
+}
+
+enum CommissionStatus {
+  CALCULATED
+  VALIDATED
+  PAID
+}
+
+enum DiscrepancyReason {
+  MISSING
+  DAMAGED
+  WRONG_PRODUCT
+  OTHER
+}
+
+enum DiscrepancyStatus {
+  OPEN
+  INVESTIGATING
+  RESOLVED
+  WRITTEN_OFF
+}
+
+// ======================================
+// REFERENTIAL TABLES
+// ======================================
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  password_hash   String
+  full_name       String
+  phone           String?
+  role            Role      @default(COMMERCIAL)
+  is_active       Boolean   @default(true)
+  last_login_at   DateTime?
+  assigned_zone   String?
+  
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  created_by      String?
+  updated_by      String?
+
+  managed_warehouses  Warehouse[]
+  assigned_partners   Partner[] 
+  assigned_deliveries Delivery[] @relation("assigned_delivery")
+  confirmed_deliveries Delivery[] @relation("confirmed_delivery")
+  visits              Visit[]
+  goals               CommercialGoal[]
+}
+
+model CommercialGoal {
+  id                String   @id @default(uuid())
+  user_id           String
+  user              User     @relation(fields: [user_id], references: [id])
+  month             Int      // 1-12
+  year              Int      
+  target_amount     Float    // Obectif CA
+  target_visits     Int      @default(0)
+  
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  @@unique([user_id, month, year])
+}
+
+model Product {
+  id                      String    @id @default(uuid())
+  code                    String    @unique
+  barcode                 String?   @unique
+  name                    String
+  brand                   String    @default("MRS")
+  category                String?
+  viscosity_grade         String?
+  container_size          Float?
+  container_unit          String?
+  purchase_price          Float?
+  selling_price_suggested Float?
+  photo_url               String?
+  reorder_point           Float     @default(10.0)
+  is_active               Boolean   @default(true)
+
+  created_at              DateTime  @default(now())
+  updated_at              DateTime  @updatedAt
+  created_by              String?
+  updated_by              String?
+
+  delivery_lines          DeliveryLine[]
+  stock_movements         StockMovement[] @relation("movement_product")
+  stock_levels            StockLevel[]    @relation("product_stock")
+  sale_lines              SaleLine[]
+  discrepancies           DiscrepancyLog[]
+}
+
+model Warehouse {
+  id              String        @id @default(uuid())
+  code            String        @unique
+  name            String
+  type            WarehouseType @default(CENTRAL)
+  address         String?
+  gps_lat         Float?
+  gps_lng         Float?
+  is_active       Boolean       @default(true)
+  
+  partner_id      String?       @unique
+  partner         Partner?      @relation(fields: [partner_id], references: [id])
+  
+  manager_user_id String?
+  manager         User?         @relation(fields: [manager_user_id], references: [id])
+
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  created_by      String?
+  updated_by      String?
+
+  source_deliveries Delivery[]  @relation("source_warehouse")
+  source_movements  StockMovement[] @relation("source_movement")
+  dest_movements    StockMovement[] @relation("dest_movement")
+  stock_levels      StockLevel[]    @relation("warehouse_stock")
+  sales             Sale[]
+}
+
+model Partner {
+  id                        String        @id @default(uuid())
+  code                      String        @unique
+  partner_type              PartnerType   @default(MECHANIC)
+  business_name             String
+  manager_name              String
+  phone                     String
+  mobile_money_number       String?
+  mobile_money_operator     String?
+  address_description       String?
+  gps_lat                   Float?
+  gps_lng                   Float?
+  zone                      String?
+  commission_rate           Float         @default(0.0)
+  stock_ceiling_amount      Float?
+  status                    PartnerStatus @default(PENDING)
+  photo_manager_url         String?
+  photo_storefront_url      String?
+
+  assigned_commercial_user_id String?
+  assigned_commercial       User?         @relation(fields: [assigned_commercial_user_id], references: [id])
+
+  created_at                DateTime      @default(now())
+  updated_at                DateTime      @updatedAt
+  created_by                String?
+  updated_by                String?
+
+  warehouse                 Warehouse?
+  deliveries                Delivery[]
+  sales                     Sale[]
+  invoices                  Invoice[]
+  payments                  Payment[]
+  commissions               Commission[]
+  visits                    Visit[]
+}
+
+// ======================================
+// TRANSACTIONAL TABLES
+// ======================================
+
+model Delivery {
+  id                          String          @id @default(uuid())
+  delivery_number             Int             @default(autoincrement()) @unique
+  target_date                 DateTime
+  status                      DeliveryStatus  @default(CREATED)
+  delivered_at                DateTime?
+  confirmed_at                DateTime?
+  signature_image_url         String?
+  photo_url                   String?
+  gps_lat_delivered           Float?
+  gps_lng_delivered           Float?
+
+  partner_id                  String
+  partner                     Partner         @relation(fields: [partner_id], references: [id])
+  
+  warehouse_source_id         String
+  warehouse_source            Warehouse       @relation("source_warehouse", fields: [warehouse_source_id], references: [id])
+  
+  assigned_delivery_user_id   String?
+  assigned_delivery_user      User?           @relation("assigned_delivery", fields: [assigned_delivery_user_id], references: [id])
+  
+  confirmed_by_commercial_user_id String?
+  confirmed_by_commercial_user User?          @relation("confirmed_delivery", fields: [confirmed_by_commercial_user_id], references: [id])
+
+  created_at                  DateTime        @default(now())
+  updated_at                  DateTime        @updatedAt
+  created_by                  String?
+  updated_by                  String?
+
+  lines                       DeliveryLine[]
+  discrepancies               DiscrepancyLog[]
+}
+
+model DeliveryLine {
+  id                          String          @id @default(uuid())
+  quantity_planned            Float
+  quantity_delivered          Float?
+  quantity_confirmed          Float?
+  discrepancy_reason          DiscrepancyReason?
+  notes                       String?
+
+  delivery_id                 String
+  delivery                    Delivery        @relation(fields: [delivery_id], references: [id])
+  
+  product_id                  String
+  product                     Product         @relation(fields: [product_id], references: [id])
+
+  created_at                  DateTime        @default(now())
+  updated_at                  DateTime        @updatedAt
+  created_by                  String?
+  updated_by                  String?
+}
+
+model StockMovement {
+  id                          String          @id @default(uuid())
+  movement_type               MovementType
+  quantity                    Float
+  unit_value                  Float?
+  source_operation_type       String?
+  source_operation_id         String?
+  justification               String?
+  is_reversal_of              String?
+
+  product_id                  String
+  product                     Product         @relation("movement_product", fields: [product_id], references: [id])
+  
+  warehouse_source_id         String?
+  warehouse_source            Warehouse?      @relation("source_movement", fields: [warehouse_source_id], references: [id])
+  
+  warehouse_destination_id    String?
+  warehouse_destination       Warehouse?      @relation("dest_movement", fields: [warehouse_destination_id], references: [id])
+
+  created_at                  DateTime        @default(now())
+  updated_at                  DateTime        @updatedAt
+  created_by                  String?
+  updated_by                  String?
+}
+
+model StockLevel {
+  id              String    @id @default(uuid())
+  quantity        Float     @default(0)
+  
+  warehouse_id    String
+  warehouse       Warehouse @relation("warehouse_stock", fields: [warehouse_id], references: [id])
+  
+  product_id      String
+  product         Product   @relation("product_stock", fields: [product_id], references: [id])
+
+  updated_at      DateTime  @updatedAt
+
+  @@unique([warehouse_id, product_id])
+}
+
+model Sale {
+  id                          String          @id @default(uuid())
+  sale_number                 Int             @default(autoincrement()) @unique
+  sale_type                   SaleType
+  total_ht                    Float           @default(0.0)
+  total_ttc                   Float           @default(0.0)
+  commission_amount           Float           @default(0.0)
+  is_commission_validated      Boolean         @default(false)
+  is_commission_paid           Boolean         @default(false)
+  status                      SaleStatus      @default(DRAFT)
+  sale_date                   DateTime
+
+  partner_id                  String?
+  partner                     Partner?        @relation(fields: [partner_id], references: [id])
+  
+  warehouse_id                String
+  warehouse                   Warehouse       @relation(fields: [warehouse_id], references: [id])
+
+  created_at                  DateTime        @default(now())
+  updated_at                  DateTime        @updatedAt
+  created_by                  String?
+  updated_by                  String?
+
+  lines                       SaleLine[]
+  visits                      Visit[]
+}
+
+model SaleLine {
+  id                          String          @id @default(uuid())
+  quantity                    Float
+  unit_price                  Float
+  discount                    Float           @default(0.0)
+  line_total                  Float
+
+  sale_id                     String
+  sale                        Sale            @relation(fields: [sale_id], references: [id])
+  
+  product_id                  String
+  product                     Product         @relation(fields: [product_id], references: [id])
+
+  created_at                  DateTime        @default(now())
+  updated_at                  DateTime        @updatedAt
+  created_by                  String?
+  updated_by                  String?
+}
+
+model Invoice {
+  id                          String          @id @default(uuid())
+  invoice_number              Int             @default(autoincrement()) @unique
+  total_ht                    Float           @default(0.0)
+  total_tva                   Float           @default(0.0)
+  total_ttc                   Float           @default(0.0)
+  due_date                    DateTime?
+  status                      InvoiceStatus   @default(DRAFT)
+  pdf_url                     String?
+
+  partner_id                  String
+  partner                     Partner         @relation(fields: [partner_id], references: [id])
+
+  created_at                  DateTime        @default(now())
+  updated_at                  DateTime        @updatedAt
+  created_by                  String?
+  updated_by                  String?
+
+  payment_allocations         PaymentAllocation[]
+}
+
+model Payment {
+  id                          String          @id @default(uuid())
+  payment_number              Int             @default(autoincrement()) @unique
+  amount                      Float
+  channel                     PaymentChannel
+  external_reference          String?
+  proof_url                   String?
+  reconciled_at               DateTime?
+
+  partner_id                  String
+  partner                     Partner         @relation(fields: [partner_id], references: [id])
+
+  created_at                  DateTime        @default(now())
+  updated_at                  DateTime        @updatedAt
+  created_by                  String?
+  updated_by                  String?
+
+  allocations                 PaymentAllocation[]
+}
+
+model PaymentAllocation {
+  id                          String          @id @default(uuid())
+  amount_allocated            Float
+
+  payment_id                  String
+  payment                     Payment         @relation(fields: [payment_id], references: [id])
+  
+  invoice_id                  String
+  invoice                     Invoice         @relation(fields: [invoice_id], references: [id])
+
+  created_at                  DateTime        @default(now())
+  updated_at                  DateTime        @updatedAt
+  created_by                  String?
+  updated_by                  String?
+}
+
+model Commission {
+  id                          String          @id @default(uuid())
+  period_start                DateTime
+  period_end                  DateTime
+  base_amount                 Float
+  rate                        Float
+  commission_amount           Float
+  status                      CommissionStatus @default(CALCULATED)
+  paid_at                     DateTime?
+  payment_reference           String?
+
+  partner_id                  String
+  partner                     Partner         @relation(fields: [partner_id], references: [id])
+
+  created_at                  DateTime        @default(now())
+  updated_at                  DateTime        @updatedAt
+  created_by                  String?
+  updated_by                  String?
+}
+
+model Visit {
+  id                          String          @id @default(uuid())
+  visited_at                  DateTime
+  gps_lat_confirmed           Float?
+  gps_lng_confirmed           Float?
+  photos                      Json?
+  notes                       String?
+  
+  partner_id                  String
+  partner                     Partner         @relation(fields: [partner_id], references: [id])
+  
+  commercial_user_id          String
+  commercial_user             User            @relation(fields: [commercial_user_id], references: [id])
+  
+  delivery_confirmation_id    String?
+
+  sale_id                     String?
+  sale                        Sale?           @relation(fields: [sale_id], references: [id])
+
+  created_at                  DateTime        @default(now())
+  updated_at                  DateTime        @updatedAt
+  created_by                  String?
+  updated_by                  String?
+}
+
+model DiscrepancyLog {
+  id                          String          @id @default(uuid())
+  quantity_declared_by_delivery Float?
+  quantity_confirmed_by_commercial Float?
+  delta                       Float?
+  reason                      DiscrepancyReason?
+  status                      DiscrepancyStatus @default(OPEN)
+  resolution_notes            String?
+  resolved_at                 DateTime?
+  resolved_by                 String?
+
+  delivery_id                 String
+  delivery                    Delivery        @relation(fields: [delivery_id], references: [id])
+  
+  product_id                  String
+  product                     Product         @relation(fields: [product_id], references: [id])
+
+  created_at                  DateTime        @default(now())
+  updated_at                  DateTime        @updatedAt
+  created_by                  String?
+  updated_by                  String?
+}
+
+model AuditLog {
+  id                          String          @id @default(uuid())
+  user_id                     String?
+  action                      String
+  entity_type                 String
+  entity_id                   String
+  ip_address                  String?
+  user_agent                  String?
+  timestamp                   DateTime        @default(now())
+
+  // We use String for jsonb if using standard Prisma un-typed json, 
+  // but Prisma natively supports Json type.
+  before_value                Json?
+  after_value                 Json?
+}
