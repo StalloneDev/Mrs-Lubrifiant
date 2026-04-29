@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 
 const navItems = [
   { name: 'Tableau de bord', href: '/dashboard', roles: ['ADMIN', 'MANAGER', 'COMMERCIAL', 'DELIVERY'] },
-  { name: 'Produits', href: '/dashboard/products', roles: ['ADMIN', 'MANAGER', 'COMMERCIAL', 'DELIVERY'] },
+  { name: 'Produits', href: '/dashboard/products', roles: ['ADMIN', 'MANAGER', 'COMMERCIAL'] },
   { name: 'Stocks', href: '/dashboard/stocks', roles: ['ADMIN', 'MANAGER'] },
   { name: 'Partenaires', href: '/dashboard/partners', roles: ['ADMIN', 'MANAGER', 'COMMERCIAL'] },
   { name: 'Livraisons', href: '/dashboard/deliveries', roles: ['ADMIN', 'MANAGER', 'DELIVERY', 'COMMERCIAL'] },

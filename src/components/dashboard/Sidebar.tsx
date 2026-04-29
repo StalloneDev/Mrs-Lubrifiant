@@ -19,7 +19,7 @@ import {
 
 const navItems = [
   { name: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard, roles: ['ADMIN', 'MANAGER', 'COMMERCIAL', 'DELIVERY'] },
-  { name: 'Produits', href: '/dashboard/products', icon: Package, roles: ['ADMIN', 'MANAGER', 'COMMERCIAL', 'DELIVERY'] },
+  { name: 'Produits', href: '/dashboard/products', icon: Package, roles: ['ADMIN', 'MANAGER', 'COMMERCIAL'] },
   { name: 'Stocks', href: '/dashboard/stocks', icon: Fuel, roles: ['ADMIN', 'MANAGER'] },
   { name: 'Partenaires', href: '/dashboard/partners', icon: Users, roles: ['ADMIN', 'MANAGER', 'COMMERCIAL'] },
   { name: 'Livraisons', href: '/dashboard/deliveries', icon: Truck, roles: ['ADMIN', 'MANAGER', 'DELIVERY', 'COMMERCIAL'] },
