@@ -8,31 +8,79 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Eye, History, FileText } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { AuditDetailDialog } from '@/components/dashboard/AuditDetailDialog'
 
 export default async function AuditLogPage() {
   const logs = await prisma.auditLog.findMany({
     orderBy: { timestamp: 'desc' },
-    take: 50,
+    take: 100, // More logs for better audit
   })
 
-  // Fetch user names to replace raw IDs
+  // Fetch user names for log.user_id
   const userIds = Array.from(new Set(logs.map(l => l.user_id).filter(Boolean))) as string[]
   const users = await prisma.user.findMany({
     where: { id: { in: userIds } },
     select: { id: true, full_name: true }
   })
-  const userMap = Object.fromEntries(users.map(u => [u.id, u.full_name]))
+  const operatorMap = Object.fromEntries(users.map(u => [u.id, u.full_name]))
+
+  // Fetch human readable names for entities
+  const entitiesByType: Record<string, string[]> = {}
+  logs.forEach(l => {
+    if (!entitiesByType[l.entity_type]) entitiesByType[l.entity_type] = []
+    entitiesByType[l.entity_type].push(l.entity_id)
+  })
+
+  const entityNameMap: Record<string, string> = {}
+
+  // Parallel resolution
+  await Promise.all([
+    // Resolve Partners
+    entitiesByType['PARTNER'] && prisma.partner.findMany({
+      where: { id: { in: entitiesByType['PARTNER'] } },
+      select: { id: true, business_name: true }
+    }).then(list => list.forEach(p => entityNameMap[p.id] = p.business_name)),
+
+    // Resolve Products
+    entitiesByType['PRODUCT'] && prisma.product.findMany({
+      where: { id: { in: entitiesByType['PRODUCT'] } },
+      select: { id: true, name: true }
+    }).then(list => list.forEach(p => entityNameMap[p.id] = p.name)),
+
+    // Resolve Users (as entities)
+    entitiesByType['USER'] && prisma.user.findMany({
+      where: { id: { in: entitiesByType['USER'] } },
+      select: { id: true, full_name: true }
+    }).then(list => list.forEach(u => entityNameMap[u.id] = u.full_name)),
+
+    // Resolve Deliveries (BL numbers)
+    entitiesByType['DELIVERY'] && prisma.delivery.findMany({
+      where: { id: { in: entitiesByType['DELIVERY'] } },
+      select: { id: true, delivery_number: true }
+    }).then(list => list.forEach(d => entityNameMap[d.id] = `BL-${d.delivery_number.toString().padStart(4, '0')}`)),
+
+    // Resolve Sales (Invoice numbers)
+    entitiesByType['SALE'] && prisma.sale.findMany({
+      where: { id: { in: entitiesByType['SALE'] } },
+      select: { id: true, sale_number: true }
+    }).then(list => list.forEach(s => entityNameMap[s.id] = `FAC-${s.sale_number}`)),
+
+    // Resolve Payments (Recu numbers)
+    entitiesByType['PAYMENT'] && prisma.payment.findMany({
+      where: { id: { in: entitiesByType['PAYMENT'] } },
+      select: { id: true, payment_number: true }
+    }).then(list => list.forEach(p => entityNameMap[p.id] = `REÇU-${p.payment_number.toString().padStart(4, '0')}`))
+  ])
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Journal d'Audit</h1>
-          <p className="text-slate-500">Historique complet des actions effectuées sur la plateforme.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-[#0B1F3A]">Journal d'Audit & Sécurité</h1>
+          <p className="text-slate-500">Traçabilité inaltérable de chaque manipulation de données.</p>
         </div>
       </div>
 
@@ -41,9 +89,9 @@ export default async function AuditLogPage() {
           <TableHeader className="bg-slate-50">
             <TableRow>
               <TableHead className="w-[180px]">Horodatage</TableHead>
-              <TableHead>Utilisateur</TableHead>
+              <TableHead>Opérateur</TableHead>
               <TableHead>Action</TableHead>
-              <TableHead>Entité</TableHead>
+              <TableHead>Cible (Entité)</TableHead>
               <TableHead className="text-right">Détails</TableHead>
             </TableRow>
           </TableHeader>
@@ -61,21 +109,21 @@ export default async function AuditLogPage() {
                     {format(new Date(log.timestamp), 'dd/MM/yy HH:mm:ss', { locale: fr })}
                   </TableCell>
                   <TableCell className="font-medium text-sm">
-                    {log.user_id ? (userMap[log.user_id] || <span className="font-mono text-xs text-slate-400">{log.user_id.slice(0, 8)}…</span>) : <span className="italic text-slate-400">Système</span>}
+                    {log.user_id ? (operatorMap[log.user_id] || <span className="font-mono text-xs text-slate-400">{log.user_id.slice(0, 8)}…</span>) : <span className="italic text-slate-400">Système</span>}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="font-bold border-slate-200">
+                    <Badge variant="outline" className="font-bold border-slate-200 uppercase text-[10px] bg-slate-50">
                       {log.action}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm">
-                    <span className="text-slate-400 mr-2">{log.entity_type}</span>
-                    <span className="font-mono text-[10px] bg-slate-100 p-1 rounded">{log.entity_id.slice(0, 8)}...</span>
+                    <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded mr-2 font-bold uppercase border">{log.entity_type}</span>
+                    <span className="font-bold text-[#0B1F3A]">
+                      {entityNameMap[log.entity_id] || <span className="font-mono text-[10px] opacity-40">{log.entity_id.slice(0, 8)}...</span>}
+                    </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon">
-                      <History className="h-4 w-4" />
-                    </Button>
+                    <AuditDetailDialog log={log} />
                   </TableCell>
                 </TableRow>
               ))
