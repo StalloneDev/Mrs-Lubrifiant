@@ -77,12 +77,12 @@ export function StockAdjustmentDialog({ warehouse }: { warehouse: any }) {
                         Régularisez le stock pour : {warehouse.name}
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleAdjust} className="space-y-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
+                <form onSubmit={handleAdjust} className="space-y-5 py-4">
+                    <div className="space-y-4">
                         <div className="space-y-2">
-                            <Label>Type d'opération</Label>
+                            <Label className="text-[#0B1F3A] font-bold">Type d'opération</Label>
                             <Select name="type" required defaultValue="ADJUSTMENT">
-                                <SelectTrigger>
+                                <SelectTrigger className="bg-slate-50 border-slate-200">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -92,10 +92,10 @@ export function StockAdjustmentDialog({ warehouse }: { warehouse: any }) {
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <Label>Produit</Label>
+                            <Label className="text-[#0B1F3A] font-bold">Produit concerné</Label>
                             <Select name="product_id" required>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Choisir..." />
+                                <SelectTrigger className="bg-slate-50 border-slate-200">
+                                    <SelectValue placeholder="Choisir un produit..." />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {products.map(p => (
