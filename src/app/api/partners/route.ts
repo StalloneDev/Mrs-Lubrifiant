@@ -27,6 +27,8 @@ export async function POST(req: Request) {
           photo_manager_url: data.photo_manager_url,
           photo_storefront_url: data.photo_storefront_url,
           stock_ceiling_amount: data.stock_ceiling_amount,
+          gps_lat: data.gps_lat,
+          gps_lng: data.gps_lng,
           assigned_commercial_user_id: session.role === 'COMMERCIAL' ? (session as any).userId : undefined,
           status: 'ACTIVE'
         }
@@ -88,6 +90,8 @@ export async function PATCH(req: Request) {
         photo_manager_url: updateData.photo_manager_url,
         photo_storefront_url: updateData.photo_storefront_url,
         stock_ceiling_amount: updateData.stock_ceiling_amount,
+        gps_lat: updateData.gps_lat,
+        gps_lng: updateData.gps_lng,
         assigned_commercial_user_id: updateData.assigned_commercial_user_id,
       }
     })
