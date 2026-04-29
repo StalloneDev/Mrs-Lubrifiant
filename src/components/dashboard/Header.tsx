@@ -25,6 +25,8 @@ const navItems = [
   { name: 'Utilisateurs', href: '/dashboard/users', roles: ['ADMIN'] },
 ]
 
+import { NotificationDropdown } from './NotificationDropdown'
+
 export default function Header({ session }: { session: any }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
@@ -48,10 +50,7 @@ export default function Header({ session }: { session: any }) {
         </div>
 
         <div className="flex items-center gap-2 lg:gap-4">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500 border-2 border-white" />
-          </Button>
+          <NotificationDropdown session={session} />
 
           <div className="flex items-center gap-3 pl-4 border-l">
             <div className="text-right hidden sm:block">
