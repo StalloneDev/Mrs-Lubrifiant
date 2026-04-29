@@ -15,10 +15,11 @@ L'application suit un cycle de vie strict pour garantir la traçabilité de chaq
 *À faire en tout premier pour initialiser le système.*
 
 1.  **Utilisateurs** : Créer les comptes (ADMIN, MANAGER, COMMERCIAL, DELIVERY).
+    *   *Exemple test* : `Nom: Thomas Dupont`, `Role: COMMERCIAL`, `Zone: Zone Nord`.
 2.  **Produits** : Enregistrer le catalogue. 
-    *   *Note* : Renseigner le **Prix d'achat** pour le calcul automatique des marges bénéficiaires.
+    *   *Exemple test* : `Nom: MRS Synth 5W40 (5L)`, `Catégorie: Lubrifiants`, `Prix d'achat: 15 000 FCFA`, `Prix de vente: 22 500 FCFA`.
 3.  **Partenaires** : Créer les fiches clients (Partenaires).
-    *   Le système crée automatiquement un **Dépôt Virtuel** pour chaque partenaire.
+    *   *Exemple test* : `Raison Sociale: Garage Moderne S.A.`, `Responsable: Marc Soro`, `Zone: Zone Nord`.
 4.  **Objectifs** : Définir les quotas mensuels sur le dashboard pour le suivi de performance.
 
 ---
@@ -27,6 +28,7 @@ L'application suit un cycle de vie strict pour garantir la traçabilité de chaq
 *L'entrée des stocks physiques dans le système.*
 
 1.  **Réception de Stock** : Utiliser le bouton "Réception de Stock" dans le menu Stocks.
+    *   *Exemple test* : Sélectionner `MRS Synth 5W40 (5L)`, Dépôt `CENTRAL`, Quantité `1000`.
 2.  **Action** : Enregistrer les quantités arrivées au **Dépôt Central**.
 3.  **Résultat** : Le stock central augmente. Aucun produit ne peut être vendu s'il n'est pas passé par ici.
 
@@ -36,6 +38,7 @@ L'application suit un cycle de vie strict pour garantir la traçabilité de chaq
 *Le transfert du stock vers le terrain.*
 
 1.  **Création du BL** : Dans le menu "Livraisons", créer un **Bon de Livraison**.
+    *   *Exemple test* : `Dépôt Central` ➔ `Garage Moderne S.A.`, Produit: `MRS Synth 5W40 (5L)`, Quantité: `50`.
 2.  **Transfert** : Le stock sort du "Central" et passe en mode **"Pending" (En attente/En route)**.
 3.  **Livraison Physique** : Le livreur remet les produits au partenaire.
 4.  **Confirmation (CRUCIAL)** : Une fois livré, le destinataire (ou le système via une action de confirmation) doit valider la réception.
@@ -47,6 +50,7 @@ L'application suit un cycle de vie strict pour garantir la traçabilité de chaq
 *La transformation du stock en chiffre d'affaires.*
 
 1.  **Vente** : Aller sur la fiche du Partenaire et cliquer sur "Déclarer une Vente".
+    *   *Exemple test* : `Garage Moderne S.A.`, Produit: `MRS Synth 5W40 (5L)`, Quantité: `10`, Prix: `22 500 FCFA`.
 2.  **Action** : Choisir les produits vendus parmi le stock disponible chez ce partenaire.
 3.  **Facturation** : Le système génère automatiquement une **Facture (FAC)**.
 4.  **Stock** : Le stock du partenaire est décrémenté automatiquement.
