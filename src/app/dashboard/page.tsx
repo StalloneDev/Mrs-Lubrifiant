@@ -33,20 +33,7 @@ export default async function DashboardPage() {
     const currentMonth = new Date().getMonth() + 1
     const currentYear = new Date().getFullYear()
 
-    const [
-      totalProducts,
-      totalPartners,
-      totalSales,
-      pendingDeliveries,
-      deliveredButNotConfirmedCount,
-      openDiscrepanciesCount,
-      allCentralStocks,
-      salesByProduct,
-      allProductsList,
-      salesByUser,
-      allCommercials,
-      activeGoals
-    ] = await Promise.all([
+    const results = await Promise.all([
       prisma.product.count(),
       prisma.partner.count(),
       prisma.sale.aggregate({ _sum: { total_ttc: true } }),
@@ -70,14 +57,38 @@ export default async function DashboardPage() {
       // Safe check for the new model (might be undefined until server restart)
       (prisma as any).commercialGoal
         ? (prisma as any).commercialGoal.findMany({ where: { month: currentMonth, year: currentYear } })
-        : Promise.resolve([])
+        : Promise.resolve([]),
+      // Aging receivables for alert
+      prisma.sale.count({
+        where: {
+          status: { in: ['VALIDATED', 'INVOICED', 'PARTIALLY_PAID'] },
+          sale_date: { lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
+        }
+      })
     ])
 
-    const lowStockAlerts = allCentralStocks.filter(s => s.quantity <= (s.product.reorder_point || 10))
+    // Proper destructuring of results
+    const [
+      totalProducts,
+      totalPartners,
+      totalSales,
+      pendingDeliveries,
+      deliveredButNotConfirmedCount,
+      openDiscrepanciesCount,
+      allCentralStocks,
+      salesByProduct,
+      allProductsList,
+      salesByUser,
+      allCommercials,
+      activeGoals,
+      oldUnpaidCount
+    ] = results as any[]
+
+    const lowStockAlerts = allCentralStocks.filter((s: any) => s.quantity <= (s.product.reorder_point || 10))
     const chartData = salesByProduct.map((sale: any) => {
-      const p = allProductsList.find(x => x.id === sale.product_id)
+      const p = allProductsList.find((x: any) => x.id === sale.product_id)
       return { name: p?.name || 'Inconnu', total: sale._sum.line_total || 0 }
-    }).sort((a, b) => b.total - a.total).slice(0, 5)
+    }).sort((a: any, b: any) => b.total - a.total).slice(0, 5)
 
     const totalSalesAmount = totalSales._sum.total_ttc || 0
 
@@ -90,7 +101,7 @@ export default async function DashboardPage() {
 
     const stats = [
       { title: 'Chiffre d\'Affaires Net', value: `${totalSalesAmount.toLocaleString()} FCFA`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
-      { title: 'Marge Brute Estimée', value: `${totalMargin.toLocaleString()} FCFA`, icon: ArrowUpRight, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
+      { title: 'Marge Brute Estimée', value: `${totalMargin.toLocaleString()} FCFA`, icon: ArrowUpRight, color: "text-[#C9A961]", bg: "bg-amber-50/50", border: "border-amber-100" },
       { title: 'Livraisons en Transit', value: deliveredButNotConfirmedCount.toString(), icon: Truck, color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-100" },
       { title: 'Litiges Ouverts', value: openDiscrepanciesCount.toString(), icon: AlertCircle, color: "text-red-600", bg: "bg-red-50", border: "border-red-100" },
     ]
@@ -112,7 +123,7 @@ export default async function DashboardPage() {
           <Card className="lg:col-span-3 border-none shadow-md">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Objectifs Commerciaux</CardTitle>
-              <TrendingUp className="h-4 w-4 text-blue-500" />
+              <TrendingUp className="h-4 w-4 text-[#C9A961]" />
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -127,7 +138,7 @@ export default async function DashboardPage() {
                       <div key={i} className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs">
+                            <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-[#0B1F3A] font-bold text-xs">
                               {comm.name.charAt(0)}
                             </div>
                             <div>
@@ -142,7 +153,7 @@ export default async function DashboardPage() {
                         {achievement !== null && (
                           <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                             <div
-                              className={cn("h-full transition-all", achievement >= 100 ? "bg-emerald-500" : achievement >= 50 ? "bg-blue-500" : "bg-orange-500")}
+                              className={cn("h-full transition-all", achievement >= 100 ? "bg-emerald-500" : achievement >= 50 ? "bg-[#C9A961]" : "bg-orange-500")}
                               style={{ width: `${Math.min(achievement, 100)}%` }}
                             />
                           </div>
@@ -167,34 +178,46 @@ export default async function DashboardPage() {
                 {lowStockAlerts.length === 0 ? (
                   <EmptyAlerts />
                 ) : (
-                  lowStockAlerts.map((alert, i) => <StockAlert key={i} alert={alert} />)
+                  lowStockAlerts.map((alert: any, i: number) => <StockAlert key={i} alert={alert} />)
                 )}
               </div>
             </CardContent>
           </Card>
           <Card className="lg:col-span-3 border-none shadow-md">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Litiges en cours</CardTitle>
+              <CardTitle>Litiges & Alertes Paiement</CardTitle>
               <AlertCircle className="h-4 w-4 text-red-500" />
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {oldUnpaidCount > 0 && (
+                  <Link href="/dashboard/sales">
+                    <div className="flex items-center gap-4 p-3 rounded-lg bg-orange-50 border border-orange-100 mb-2 hover:bg-orange-100 transition-colors cursor-pointer">
+                      <Clock className="h-5 w-5 text-orange-600" />
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-orange-900">{oldUnpaidCount} factures impayées (+30j)</p>
+                        <p className="text-[10px] text-orange-700">Risque de créances douteuses.</p>
+                      </div>
+                      <ArrowUpRight className="h-4 w-4 text-orange-400" />
+                    </div>
+                  </Link>
+                )}
                 {openDiscrepanciesCount > 0 && (
                   <Link href="/dashboard/discrepancies">
                     <div className="flex items-center gap-4 p-3 rounded-lg bg-red-50 border border-red-100 mb-4 hover:bg-red-100 transition-colors cursor-pointer">
                       <AlertCircle className="h-5 w-5 text-red-600" />
                       <div className="flex-1">
-                        <p className="text-sm font-bold text-red-900">Attention : {openDiscrepanciesCount} litige(s) ouvert(s)</p>
-                        <p className="text-[10px] text-red-700">Des écarts de livraison nécessitent votre attention.</p>
+                        <p className="text-sm font-bold text-red-900">{openDiscrepanciesCount} litige(s) ouvert(s)</p>
+                        <p className="text-[10px] text-red-700">Écarts de livraison à traiter.</p>
                       </div>
                       <ArrowUpRight className="h-4 w-4 text-red-400" />
                     </div>
                   </Link>
                 )}
-                {openDiscrepanciesCount === 0 && (
+                {openDiscrepanciesCount === 0 && oldUnpaidCount === 0 && (
                   <div className="flex flex-col items-center justify-center py-6 text-slate-400">
                     <CheckCircle2 className="h-8 w-8 mb-2 text-emerald-500 opacity-20" />
-                    <p className="text-xs italic">Aucun litige en attente.</p>
+                    <p className="text-xs italic">Aucune alerte prioritaire.</p>
                   </div>
                 )}
               </div>
@@ -226,7 +249,7 @@ export default async function DashboardPage() {
     ])
 
     const stats = [
-      { title: 'Mes Partenaires', value: myPartnersCount.toString(), icon: Users, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
+      { title: 'Mes Partenaires', value: myPartnersCount.toString(), icon: Users, color: "text-[#0B1F3A]", bg: "bg-slate-50", border: "border-slate-100" },
       { title: 'À Confirmer', value: toConfirmDeliveries.length.toString(), icon: AlertCircle, color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-100" },
       { title: 'Visites Effectuées', value: recentVisits.toString(), icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
     ]

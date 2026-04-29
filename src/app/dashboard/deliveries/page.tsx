@@ -99,7 +99,7 @@ export default async function DeliveriesPage() {
               <TableHead>Partenaire</TableHead>
               <TableHead>Date Prévue</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">Valeur</TableHead>
+              {role !== 'DELIVERY' && <TableHead className="text-right">Valeur</TableHead>}
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -124,10 +124,12 @@ export default async function DeliveriesPage() {
                     {d.status === 'DELIVERED' ? 'LIVRÉ' : 'EN TRANSIT'}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-right font-medium">
-                  {/* Total calculation here if needed */}
-                  -
-                </TableCell>
+                {role !== 'DELIVERY' && (
+                  <TableCell className="text-right font-medium">
+                    {/* Total calculation here if needed */}
+                    -
+                  </TableCell>
+                )}
                 <TableCell className="text-right flex items-center justify-end gap-2">
                   <Link href={`/dashboard/deliveries/${d.id}/print`} target="_blank">
                     <Button size="sm" variant="outline" className="h-8 w-8 p-0">

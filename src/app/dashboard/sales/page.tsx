@@ -89,15 +89,15 @@ export default async function SalesPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="border-none shadow-sm bg-blue-50/50">
+        <Card className="border-none shadow-sm bg-amber-50/30">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">Chiffre d'Affaires (H.T)</p>
-                <h3 className="text-2xl font-black text-[#0B1F3A] mt-1">{totalAmount.toLocaleString()} <span className="text-sm font-medium">FCFA</span></h3>
+                <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">Créances Actives</p>
+                <h3 className="text-2xl font-black text-[#0B1F3A] mt-1">{(aging.current + aging.overdue30 + aging.overdue60).toLocaleString()} <span className="text-sm font-medium">FCFA</span></h3>
               </div>
-              <div className="h-12 w-12 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <TrendingUp className="h-6 w-6 text-white" />
+              <div className="h-12 w-12 rounded-2xl bg-[#C9A961] flex items-center justify-center shadow-lg shadow-amber-500/20">
+                <Calendar className="h-6 w-6 text-white" />
               </div>
             </div>
             <div className="flex items-center gap-1 mt-4 text-[10px] font-bold text-green-600 bg-green-100 w-fit px-2 py-0.5 rounded-full">
