@@ -123,7 +123,7 @@ export default async function InvoicesPage() {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <Link href={`/dashboard/invoices/${invoice.id}/print`}>
+                                                <Link href={`/dashboard/invoices/${invoice.id}/print`} target="_blank">
                                                     <Button size="sm" variant="ghost" className="text-blue-600 font-bold hover:bg-blue-50">
                                                         <Printer className="h-4 w-4 mr-2" /> Imprimer
                                                     </Button>

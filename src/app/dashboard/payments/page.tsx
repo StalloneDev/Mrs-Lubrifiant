@@ -122,7 +122,7 @@ export default async function PaymentsPage() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Link href={`/dashboard/payments/${p.id}/print`}>
+                    <Link href={`/dashboard/payments/${p.id}/print`} target="_blank">
                       <Button variant="ghost" size="icon" title="Imprimer le reçu">
                         <Printer className="h-4 w-4 text-slate-500" />
                       </Button>

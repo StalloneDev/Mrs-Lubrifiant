@@ -19,13 +19,19 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
-      <Sidebar role={session.role} />
+      <div className="print:hidden">
+        <Sidebar role={session.role} />
+      </div>
       <div className="flex flex-1 flex-col">
-        <Header session={session} />
-        <main className="flex-1 p-4 lg:p-8 pb-24 lg:pb-8">
+        <div className="print:hidden">
+          <Header session={session} />
+        </div>
+        <main className="flex-1 p-4 lg:p-8 pb-24 lg:pb-8 print:p-0">
           {children}
         </main>
-        <MobileNav role={session.role} />
+        <div className="print:hidden">
+          <MobileNav role={session.role} />
+        </div>
       </div>
     </div>
   )

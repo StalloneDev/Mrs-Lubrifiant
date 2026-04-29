@@ -60,7 +60,7 @@ export default async function DeliveryDetailPage({ params }: { params: { id: str
                     <p className="text-slate-500 font-medium">Créé le {format(new Date(delivery.created_at), 'dd/MM/yyyy HH:mm')}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Link href={`/dashboard/deliveries/${delivery.id}/print`}>
+                    <Link href={`/dashboard/deliveries/${delivery.id}/print`} target="_blank">
                         <Button variant="outline" className="font-bold border-slate-200">
                             <Printer className="mr-2 h-4 w-4 text-blue-600" /> Imprimer BL
                         </Button>

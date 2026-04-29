@@ -92,7 +92,7 @@ export default async function PrintDeliveryPage({ params }: { params: { id: stri
       </div>
 
       <div className="mt-16 pt-8 border-t text-[9px] text-slate-400 text-center">
-        MRS BENIN S.A. - RCCM RB/COT/07 B 123 - IFU 1234567890123 <br />
+        MRS BENIN S.A. - RC : RB/COT/07 B 123 - IFU 1234567890123 <br />
         Document généré électroniquement - Valide sans signature manuscrite pour le suivi de stock consignation.
       </div>
 
