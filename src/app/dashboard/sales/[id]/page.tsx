@@ -102,7 +102,7 @@ export default async function SaleDetailsPage({ params }: { params: { id: string
                                         {line.unit_price.toLocaleString()} FCFA
                                     </td>
                                     <td className="p-4 text-right tabular-nums font-bold text-[#0B1F3A]">
-                                        {line.total_price.toLocaleString()} FCFA
+                                        {(line.line_total || 0).toLocaleString()} FCFA
                                     </td>
                                 </tr>
                             ))}
