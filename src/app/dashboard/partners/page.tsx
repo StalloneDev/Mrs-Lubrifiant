@@ -128,20 +128,25 @@ export default async function PartnersPage() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <div className={cn(
-                      "h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white",
-                      partner.assigned_commercial ? "bg-[#0B1F3A]" : "bg-slate-200"
-                    )}>
-                      {partner.assigned_commercial?.full_name?.charAt(0) || '?'}
-                    </div>
-                    <div className="text-xs">
-                      <p className="text-slate-400 leading-tight">Commercial</p>
-                      <p className="font-medium text-slate-700 leading-tight">
-                        {partner.assigned_commercial?.full_name || 'Non assigné'}
-                      </p>
-                    </div>
-                  </div>
+                  <PartnerDialog
+                    partner={partner}
+                    trigger={
+                      <div className="flex items-center gap-1.5 cursor-pointer hover:bg-slate-50 p-1 rounded-lg transition-colors overflow-hidden">
+                        <div className={cn(
+                          "h-8 w-8 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white",
+                          partner.assigned_commercial ? "bg-[#0B1F3A]" : "bg-slate-200"
+                        )}>
+                          {partner.assigned_commercial?.full_name?.charAt(0) || '?'}
+                        </div>
+                        <div className="text-xs text-left">
+                          <p className="text-slate-400 leading-tight">Commercial</p>
+                          <p className="font-medium text-slate-700 leading-tight truncate max-w-[100px]">
+                            {partner.assigned_commercial?.full_name || 'Non assigné'}
+                          </p>
+                        </div>
+                      </div>
+                    }
+                  />
                   <Link href={`/dashboard/partners/${partner.id}`}>
                     <Button variant="ghost" size="sm" className="text-[#C9A961] font-bold hover:text-[#B89850] hover:bg-transparent px-0 underline underline-offset-4">
                       Voir détails

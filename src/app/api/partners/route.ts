@@ -88,6 +88,7 @@ export async function PATCH(req: Request) {
         photo_manager_url: updateData.photo_manager_url,
         photo_storefront_url: updateData.photo_storefront_url,
         stock_ceiling_amount: updateData.stock_ceiling_amount,
+        assigned_commercial_user_id: updateData.assigned_commercial_user_id,
       }
     })
 

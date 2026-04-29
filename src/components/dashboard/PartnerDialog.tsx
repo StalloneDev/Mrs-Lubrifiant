@@ -15,18 +15,26 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus } from "lucide-react"
+import { Plus, UserCheck } from "lucide-react"
+import { useEffect } from "react"
 
-export function PartnerDialog({ partner }: { partner?: any }) {
+export function PartnerDialog({ partner, trigger }: { partner?: any, trigger?: React.ReactNode }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [commercials, setCommercials] = useState<{ id: string, full_name: string }[]>([])
   const [gps, setGps] = useState<{ lat: number, lng: number } | null>(
     partner?.gps_lat && partner?.gps_lng ? { lat: partner.gps_lat, lng: partner.gps_lng } : null
   )
   const [capturing, setCapturing] = useState(false)
 
   const isEdit = !!partner
+
+  useEffect(() => {
+    if (open) {
+      fetch("/api/users/commercials").then(res => res.json()).then(setCommercials)
+    }
+  }, [open])
 
   const captureGps = () => {
     setCapturing(true)
@@ -76,6 +84,8 @@ export function PartnerDialog({ partner }: { partner?: any }) {
         photoStorefrontUrl = res.url
       }
 
+      const assignedId = formData.get("assigned_commercial_user_id")
+
       const data = {
         id: partner?.id,
         code: formData.get("code"),
@@ -93,6 +103,7 @@ export function PartnerDialog({ partner }: { partner?: any }) {
         photo_storefront_url: photoStorefrontUrl,
         gps_lat: gps?.lat || null,
         gps_lng: gps?.lng || null,
+        assigned_commercial_user_id: assignedId && assignedId !== "none" ? assignedId : null
       }
 
       const response = await fetch("/api/partners", {
@@ -115,7 +126,9 @@ export function PartnerDialog({ partner }: { partner?: any }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {isEdit ? (
+        {trigger ? (
+          trigger
+        ) : isEdit ? (
           <Button className="bg-[#0B1F3A] hover:bg-[#1a3a63]">Modifier</Button>
         ) : (
           <Button className="bg-[#0B1F3A] hover:bg-[#1a3a63]">
@@ -234,6 +247,24 @@ export function PartnerDialog({ partner }: { partner?: any }) {
                 )}
               </div>
             </div>
+          </div>
+
+          <div className="space-y-2 pb-2">
+            <Label htmlFor="assigned_commercial_user_id" className="flex items-center gap-2">
+              <UserCheck className="h-4 w-4 text-blue-600" /> Commercial assigné
+            </Label>
+            <Select name="assigned_commercial_user_id" defaultValue={partner?.assigned_commercial_user_id || "none"}>
+              <SelectTrigger className="bg-blue-50/50 border-blue-100">
+                <SelectValue placeholder="Choisir un commercial..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none" className="text-slate-400 font-italic">Aucun (Retirer l'assignation)</SelectItem>
+                {commercials.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.full_name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-slate-400 italic">Ce commercial sera responsable du suivi et recevra les commissions sur les ventes.</p>
           </div>
 
           <DialogFooter className="pt-4">
