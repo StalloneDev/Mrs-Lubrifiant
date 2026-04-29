@@ -1,70 +1,80 @@
 # Manuel de Formation - Plateforme MRS Lubricants 🚜🛢️
 
-Ce guide détaille le processus d'utilisation de l'application de A à Z, en respectant l'ordre logique des opérations métier.
+Ce manuel détaille le **flux de données** et les processus opérationnels de l'application MRS Lubricants, de la configuration initiale jusqu'à l'audit final.
 
 ---
 
-## 🏗️ ÉTAPE 1 : Configuration Initiale (À faire en premier)
-*Rôle : Administrateur*
+## 🔄 LE FLUX DE DONNÉES (De A à Z)
 
-Avant toute opération, la base de données doit être configurée dans cet ordre précis :
-
-1.  **Gestion des Utilisateurs** : Créer les comptes pour les Magasiniers, Commerciaux et Managers.
-2.  **Entrepôts & Camions** : Créer l'Entrepôt Central ("CENTRAL") et les entrepôts mobiles ("TRUCK") liés à chaque commercial.
-3.  **Catalogue Produits** : Enregistrer les lubrifiants avec leur **Prix d'Achat** (pour le calcul des marges) et leur **Prix de Vente**.
-4.  **Objectifs Commerciaux** : Dans le Dashboard, définir les objectifs mensuels (en FCFA) pour chaque commercial.
+L'application suit un cycle de vie strict pour garantir la traçabilité de chaque bidon de lubrifiant :
+`Configuration` ➔ `Approvisionnement` ➔ `Distribution` ➔ `Confirmation` ➔ `Vente` ➔ `Recouvrement` ➔ `Audit`
 
 ---
 
-## 📦 ÉTAPE 2 : Gestion des Stocks & Logistique
-*Rôle : Magasinier / Administrateur*
+## 🛠️ ÉTAPE 1 : Configuration & Référentiel (Admin)
+*À faire en tout premier pour initialiser le système.*
 
-L'application ne permet pas de vendre ce qui n'est pas en stock.
-
-1.  **Réception de Stock** : Enregistrer l'arrivée des produits dans l'entrepôt Central.
-2.  **Création de Livraison** : Créer une livraison pour transférer des produits du Central vers le Camion d'un commercial.
-3.  **Confirmation de Réception** : Le commercial doit confirmer la réception sur son interface mobile pour que le stock soit officiellement ajouté à son camion.
-
----
-
-## 🤝 ÉTAPE 3 : Activité Terrain
-*Rôle : Commercial*
-
-1.  **Création de Partenaire** : Lors de la visite d'un nouveau client, créer sa fiche.
-    *   *Important* : L'application capture automatiquement les coordonnées GPS. Cliquez sur "Voir sur Maps" pour vérifier la précision.
-2.  **Prise de Commande (Vente)** : Enregistrer la vente depuis la fiche du partenaire.
-    *   Préciser si c'est une vente au comptant ou à crédit.
-    *   L'application génère automatiquement une facture.
+1.  **Utilisateurs** : Créer les comptes (ADMIN, MANAGER, COMMERCIAL, DELIVERY).
+2.  **Produits** : Enregistrer le catalogue. 
+    *   *Note* : Renseigner le **Prix d'achat** pour le calcul automatique des marges bénéficiaires.
+3.  **Partenaires** : Créer les fiches clients (Partenaires).
+    *   Le système crée automatiquement un **Dépôt Virtuel** pour chaque partenaire.
+4.  **Objectifs** : Définir les quotas mensuels sur le dashboard pour le suivi de performance.
 
 ---
 
-## 💰 ÉTAPE 4 : Recouvrement & Commissions
-*Rôle : Commercial / Administrateur*
+## 📦 ÉTAPE 2 : Approvisionnement Central (Admin/Manager)
+*L'entrée des stocks physiques dans le système.*
 
-1.  **Encaissement** : Si la vente est à crédit, enregistrer les paiements au fur et à mesure.
-2.  **Validation des Commissions** : L'administrateur examine les ventes "Validées" et approuve les commissions calculées.
-3.  **Règlement des Commissions** : Une fois validées, les commissions sont marquées comme "Payées" après le versement effectif au commercial.
-
----
-
-## 📊 ÉTAPE 5 : Analyse & Reporting (À faire en dernier)
-*Rôle : Manager / Administrateur*
-
-C'est l'étape finale pour le pilotage de l'activité :
-
-1.  **Tableau de Bord** : Suivre en temps réel :
-    *   Le Chiffre d'Affaires Net.
-    *   La Marge Brute (CA - Coût d'Achat).
-    *   Le Taux d'atteinte des objectifs mensuels.
-2.  **Exports CSV** : Exporter les listes de ventes ou de partenaires pour des rapports externes.
-3.  **Inventaire Physique** : Utiliser la page "Stocks" et le bouton d'impression pour générer une fiche de comptage papier pour les audits de fin de mois.
+1.  **Réception de Stock** : Utiliser le bouton "Réception de Stock" dans le menu Stocks.
+2.  **Action** : Enregistrer les quantités arrivées au **Dépôt Central**.
+3.  **Résultat** : Le stock central augmente. Aucun produit ne peut être vendu s'il n'est pas passé par ici.
 
 ---
 
-## 🛡️ RÈGLES D'OR
-1.  **Zéro Suppression** : On ne supprime rien. Si une erreur est faite, on utilise les journaux de litiges (Discrepancy Logs) ou on annule via une opération inverse.
-2.  **GPS Obligatoire** : Assurez-vous que la localisation est activée sur mobile pour la création de partenaires.
-3.  **Traitement des Litiges** : Tout écart lors d'une livraison doit être documenté immédiatement dans le module "Litiges".
+## 🚛 ÉTAPE 3 : Distribution & Logistique (Livreur/Commercial)
+*Le transfert du stock vers le terrain.*
+
+1.  **Création du BL** : Dans le menu "Livraisons", créer un **Bon de Livraison**.
+2.  **Transfert** : Le stock sort du "Central" et passe en mode **"Pending" (En attente/En route)**.
+3.  **Livraison Physique** : Le livreur remet les produits au partenaire.
+4.  **Confirmation (CRUCIAL)** : Une fois livré, le destinataire (ou le système via une action de confirmation) doit valider la réception.
+5.  **Résultat** : Le stock quitte le mode "Pending" et s'ajoute au **Dépôt Virtuel du Partenaire** (Stock en Consignation).
 
 ---
-*Document généré le 28/04/2026 pour MRS Bénin S.A.*
+
+## 🏷️ ÉTAPE 4 : Vente & Déclaration (Commercial/Manager)
+*La transformation du stock en chiffre d'affaires.*
+
+1.  **Vente** : Aller sur la fiche du Partenaire et cliquer sur "Déclarer une Vente".
+2.  **Action** : Choisir les produits vendus parmi le stock disponible chez ce partenaire.
+3.  **Facturation** : Le système génère automatiquement une **Facture (FAC)**.
+4.  **Stock** : Le stock du partenaire est décrémenté automatiquement.
+
+---
+
+## � ÉTAPE 5 : Recouvrement & Commissions (Finance)
+*La gestion de la liquidité.*
+
+1.  **Encaissement** : Enregistrer les paiements reçus (partiels ou totaux).
+2.  **Statut** : La facture passe de "Impayée" à "Payée".
+3.  **Commissions** : Le système calcule la commission du commercial. Elle doit être **Validée** puis **Payée** via le module Commissions.
+
+---
+
+## � ÉTAPE 6 : Audit & Supervision (Direction)
+*Le contrôle permanent.*
+
+1.  **Journal d'Audit** : Consulter le menu "Audit" pour voir **exactement** qui a fait quoi (ex: "Reset de mot de passe", "Modification de prix").
+2.  **Notifications** : Surveiller la cloche dans le header pour les alertes de **Stock Bas** ou les **Factures en retard**.
+3.  **Ajustements** : Si un bidon est cassé ou perdu, utiliser le dialogue "Ajustement / Retour de Stock" pour régulariser avec une justification obligatoire.
+
+---
+
+## 🛡️ RÈGLES DE SÉCURITÉ
+- **Zéro Suppression** : Toute erreur doit être corrigée par une opération inverse ou documentée en litige.
+- **Transparence** : Chaque action est logguée avec l'IP et le nom de l'utilisateur.
+- **Consignation** : Le stock appartenant à MRS reste visible jusqu'à la vente finale.
+
+---
+*Guide d'exploitation - MRS Bénin S.A. - Avril 2026*
