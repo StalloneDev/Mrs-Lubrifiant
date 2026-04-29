@@ -123,7 +123,7 @@ export default async function AuditLogPage() {
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <AuditDetailDialog log={log} />
+                    <AuditDetailDialog log={log} entityName={entityNameMap[log.entity_id]} />
                   </TableCell>
                 </TableRow>
               ))
