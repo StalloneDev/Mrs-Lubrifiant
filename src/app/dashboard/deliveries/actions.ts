@@ -55,29 +55,19 @@ export async function createDelivery(formData: FormData) {
 
     // STOCK CEILING CHECK
     if (partner.stock_ceiling_amount && partner.stock_ceiling_amount > 0) {
-      // 1. Calculate current consignment value
+      // 1. Calculate current consignment quantity
       const stockLevels = await prisma.stockLevel.findMany({
         where: { warehouse_id: partner.warehouse?.id },
-        include: { product: true }
       })
 
-      const currentStockValue = stockLevels.reduce((acc, level) => {
-        return acc + (level.quantity * (level.product.selling_price_suggested || 0))
-      }, 0)
+      const currentStockQuantity = stockLevels.reduce((acc, level) => acc + level.quantity, 0)
 
-      // 2. Calculate new delivery value
-      const products = await prisma.product.findMany({
-        where: { id: { in: lines.map(l => l.product_id) } }
-      })
+      // 2. Calculate new delivery quantity
+      const newDeliveryQuantity = lines.reduce((acc, line) => acc + line.quantity_planned, 0)
 
-      const newDeliveryValue = lines.reduce((acc, line) => {
-        const prod = products.find(p => p.id === line.product_id)
-        return acc + (line.quantity_planned * (prod?.selling_price_suggested || 0))
-      }, 0)
-
-      if ((currentStockValue + newDeliveryValue) > partner.stock_ceiling_amount) {
+      if ((currentStockQuantity + newDeliveryQuantity) > partner.stock_ceiling_amount) {
         return {
-          error: `Plafond de stock dépassé. Actuel: ${currentStockValue.toLocaleString()} FCFA. Nouvelle: ${newDeliveryValue.toLocaleString()} FCFA. Plafond: ${partner.stock_ceiling_amount.toLocaleString()} FCFA.`
+          error: `Plafond de stock dépassé. Quantité actuelle: ${currentStockQuantity} unités. Nouvelle: ${newDeliveryQuantity} unités. Plafond autorisé: ${partner.stock_ceiling_amount} unités.`
         }
       }
     }

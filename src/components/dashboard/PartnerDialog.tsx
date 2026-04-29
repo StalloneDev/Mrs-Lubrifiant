@@ -201,8 +201,8 @@ export function PartnerDialog({ partner, trigger }: { partner?: any, trigger?: R
               <Input id="commission_rate" name="commission_rate" type="number" step="0.1" defaultValue={partner?.commission_rate || "5"} required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="stock_ceiling_amount">Plafond Stock (FCFA)</Label>
-              <Input id="stock_ceiling_amount" name="stock_ceiling_amount" type="number" defaultValue={partner?.stock_ceiling_amount} placeholder="500000" />
+              <Label htmlFor="stock_ceiling_amount">Plafond Stock (Unités totales)</Label>
+              <Input id="stock_ceiling_amount" name="stock_ceiling_amount" type="number" defaultValue={partner?.stock_ceiling_amount} placeholder="500" />
             </div>
           </div>
 

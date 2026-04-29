@@ -29,19 +29,15 @@ Ce manuel détaille le **flux de données** opérationnel. Suivez ces étapes av
     - `Prix Vente Sugg.` : 25 000
 - **Résultat** : Le produit apparaît dans le catalogue. Il est prêt à être réceptionné en stock.
 
-### 1.3 Enregistrer un Partenaire (Client)
-- **Action** : Menu "Partenaires" ➔ Bouton "Nouveau partenaire".
-- **Données Test** :
-    - `Code (Unique)` : P-GMOD-01
-    - `Type` : Mécanicien (Garage)
-    - `Nom de l'établissement / Enseigne` : Garage Moderne Cotonou
-    - `Nom du Gérant` : Paul ZINSOU
-    - `Téléphone` : +229 97 00 00 02
-    - `Taux Commission (%)` : 5
-    - `Plafond Stock (FCFA)` : 1 000 000
-    - `Zone Géographique` : Cotonou - Akpakpa
-    - **Note** : Cliquez sur "Capturer GPS Terrain" une fois sur place.
-- **Résultat** : La fiche partenaire est créée. Un **Dépôt Virtuel** vide lui est automatiquement associé.
+### 1. Création du Réseau Terrain (Partenaires)
+*   **Menu** : `Partenaires` -> `Nouveau partenaire`
+*   **Données Test** :
+    *   **Enseigne** : Garage du Progrès
+    *   **Gérant** : M. Jean Agbo
+    *   **Plafond Stock** : `500` (Nombre total d'unités autorisées en stock)
+    *   **Commission** : `5%`
+*   **Action** : Cliquez sur `Capturer GPS Terrain` devant l'établissement.
+*   **Résultat** : Le partenaire est créé avec son entrepôt virtuel prêt à recevoir du stock.
 
 ---
 

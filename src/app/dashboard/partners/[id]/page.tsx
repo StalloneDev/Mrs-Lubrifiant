@@ -179,7 +179,7 @@ export default async function PartnerDetailPage({ params }: { params: { id: stri
                   <div className="mt-4 pt-4 border-t">
                      <div className="flex justify-between items-center">
                         <span className="text-xs text-slate-400">Plafond autorisé</span>
-                        <span className="text-sm font-bold">{partner.stock_ceiling_amount?.toLocaleString() || 0} FCFA</span>
+                        <span className="text-sm font-bold">{partner.stock_ceiling_amount?.toLocaleString() || 0} Unités</span>
                      </div>
                   </div>
                </CardContent>
