@@ -4,7 +4,7 @@ import { decrypt } from '@/lib/auth'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Truck, CheckCircle, Clock, AlertTriangle, FileText } from 'lucide-react'
+import { Truck, CheckCircle, Clock, AlertTriangle, Printer, Eye } from 'lucide-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import Link from 'next/link'
@@ -131,9 +131,14 @@ export default async function DeliveriesPage() {
                   </TableCell>
                 )}
                 <TableCell className="text-right flex items-center justify-end gap-2">
+                  <Link href={`/dashboard/deliveries/${d.id}`}>
+                    <Button size="sm" variant="outline" className="h-8 w-8 p-0 border-[#C9A961]/20 hover:bg-[#C9A961]/10">
+                      <Eye className="h-4 w-4 text-[#C9A961]" />
+                    </Button>
+                  </Link>
                   <Link href={`/dashboard/deliveries/${d.id}/print`} target="_blank">
                     <Button size="sm" variant="outline" className="h-8 w-8 p-0">
-                      <FileText className="h-4 w-4 text-slate-400" />
+                      <Printer className="h-4 w-4 text-slate-400" />
                     </Button>
                   </Link>
                   {d.status !== 'DELIVERED' && (
