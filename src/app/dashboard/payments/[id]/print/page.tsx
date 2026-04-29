@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { PrintButton } from '@/components/dashboard/PrintButton'
 
 export default async function PrintPaymentPage({ params }: { params: { id: string } }) {
     const payment = await prisma.payment.findUnique({
@@ -33,8 +34,10 @@ export default async function PrintPaymentPage({ params }: { params: { id: strin
                     <p className="text-[10px] uppercase font-black text-slate-400 mb-2">Bénéficiaire</p>
                     <div className="text-sm space-y-1">
                         <p className="font-bold">MRS BENIN S.A.</p>
-                        <p>Zone Industrielle, Cotonou</p>
-                        <p>Tél: +229 21 XX XX XX</p>
+                        <p>Avenue Jean-Paul II</p>
+                        <p>Cotonou, Route de L'Aeroport</p>
+                        <p>Tél : +(229) 21 30 65 47</p>
+                        <p>Fax : +(229) 21 30 65 49</p>
                     </div>
                 </div>
                 <div className="bg-slate-50 p-4 rounded-lg">
@@ -79,17 +82,12 @@ export default async function PrintPaymentPage({ params }: { params: { id: strin
             </div>
 
             <div className="mt-16 pt-8 border-t text-[9px] text-slate-400 text-center">
-                MRS BENIN S.A. - RCCM RB/COT/07 B 123 - IFU 1234567890123 <br />
+                MRS BENIN S.A. - RCCM RB/COT/06 B 44 - INSAE : 2556106573457 -  IFU : 3200700025313<br />
                 Ce reçu confirme l'encaissement de la somme mentionnée ci-dessus pour le compte de MRS BENIN S.A.
             </div>
 
             <div className="fixed bottom-8 right-8 print:hidden flex gap-2">
-                <button
-                    onClick={() => window.print()}
-                    className="bg-[#0B1F3A] text-white px-6 py-2 rounded-full font-bold shadow-xl hover:scale-105 transition-transform"
-                >
-                    Imprimer / Exporter PDF
-                </button>
+                <PrintButton />
             </div>
         </div>
     )

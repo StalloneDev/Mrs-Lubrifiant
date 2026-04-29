@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { PrintButton } from '@/components/dashboard/PrintButton'
 
 export default async function PrintDeliveryPage({ params }: { params: { id: string } }) {
   const delivery = await prisma.delivery.findUnique({
@@ -81,12 +82,12 @@ export default async function PrintDeliveryPage({ params }: { params: { id: stri
 
       <div className="grid grid-cols-2 gap-8 pt-12 border-t border-dashed mt-auto">
         <div className="text-center h-32 border border-slate-200 rounded p-2 flex flex-col justify-between">
-           <p className="text-xs font-bold uppercase text-slate-400">Cachet & Signature MRS</p>
-           <div className="text-[10px] italic text-slate-300">Emis par le système central</div>
+          <p className="text-xs font-bold uppercase text-slate-400">Cachet & Signature MRS</p>
+          <div className="text-[10px] italic text-slate-300">Emis par le système central</div>
         </div>
         <div className="text-center h-32 border border-slate-200 rounded p-2 flex flex-col justify-between">
-           <p className="text-xs font-bold uppercase text-slate-400">Accusé de réception Partenaire</p>
-           <div className="text-[10px] italic text-slate-300">Lu et approuvé</div>
+          <p className="text-xs font-bold uppercase text-slate-400">Accusé de réception Partenaire</p>
+          <div className="text-[10px] italic text-slate-300">Lu et approuvé</div>
         </div>
       </div>
 
@@ -95,13 +96,8 @@ export default async function PrintDeliveryPage({ params }: { params: { id: stri
         Document généré électroniquement - Valide sans signature manuscrite pour le suivi de stock consignation.
       </div>
 
-      <div className="fixed bottom-8 right-8 print:hidden flex gap-2">
-         <button 
-           onClick={() => window.print()}
-           className="bg-[#0B1F3A] text-white px-6 py-2 rounded-full font-bold shadow-xl hover:scale-105 transition-transform"
-         >
-           Imprimer / Exporter PDF
-         </button>
+      <div className="fixed bottom-8 right-8 print:hidden">
+        <PrintButton />
       </div>
     </div>
   )

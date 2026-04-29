@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { PrintButton } from '@/components/dashboard/PrintButton'
 
 export default async function StockPrintPage() {
     const warehouses = await prisma.warehouse.findMany({
@@ -87,6 +88,10 @@ export default async function StockPrintPage() {
 
             {/* Auto-print script */}
             <script dangerouslySetInnerHTML={{ __html: 'window.print()' }} />
+
+            <div className="fixed bottom-8 right-8 print:hidden">
+                <PrintButton />
+            </div>
         </div>
     )
 }
