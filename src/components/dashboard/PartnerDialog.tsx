@@ -17,12 +17,16 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus } from "lucide-react"
 
-export function PartnerDialog() {
+export function PartnerDialog({ partner }: { partner?: any }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [gps, setGps] = useState<{ lat: number, lng: number } | null>(null)
+  const [gps, setGps] = useState<{ lat: number, lng: number } | null>(
+    partner?.gps_lat && partner?.gps_lng ? { lat: partner.gps_lat, lng: partner.gps_lng } : null
+  )
   const [capturing, setCapturing] = useState(false)
+
+  const isEdit = !!partner
 
   const captureGps = () => {
     setCapturing(true)
@@ -52,8 +56,8 @@ export function PartnerDialog() {
     const photoManagerFile = formData.get("photo_manager") as File
     const photoStorefrontFile = formData.get("photo_storefront") as File
 
-    let photoManagerUrl = ""
-    let photoStorefrontUrl = ""
+    let photoManagerUrl = partner?.photo_manager_url || ""
+    let photoStorefrontUrl = partner?.photo_storefront_url || ""
 
     try {
       // Upload Manager Photo
@@ -73,6 +77,7 @@ export function PartnerDialog() {
       }
 
       const data = {
+        id: partner?.id,
         code: formData.get("code"),
         partner_type: formData.get("partner_type"),
         business_name: formData.get("business_name"),
@@ -91,7 +96,7 @@ export function PartnerDialog() {
       }
 
       const response = await fetch("/api/partners", {
-        method: "POST",
+        method: isEdit ? "PATCH" : "POST",
         body: JSON.stringify(data),
         headers: { "Content-Type": "application/json" }
       })
@@ -110,23 +115,27 @@ export function PartnerDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-[#0B1F3A] hover:bg-[#1a3a63]">
-          <Plus className="mr-2 h-4 w-4" /> Nouveau partenaire
-        </Button>
+        {isEdit ? (
+          <Button className="bg-[#0B1F3A] hover:bg-[#1a3a63]">Modifier</Button>
+        ) : (
+          <Button className="bg-[#0B1F3A] hover:bg-[#1a3a63]">
+            <Plus className="mr-2 h-4 w-4" /> Nouveau partenaire
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Enregistrer un nouveau partenaire</DialogTitle>
+          <DialogTitle>{isEdit ? `Modifier : ${partner.business_name}` : "Enregistrer un nouveau partenaire"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="code">Code (Unique)</Label>
-              <Input id="code" name="code" placeholder="PART-XXXX" required />
+              <Input id="code" name="code" defaultValue={partner?.code} placeholder="PART-XXXX" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="partner_type">Type</Label>
-              <Select name="partner_type" defaultValue="MECHANIC">
+              <Select name="partner_type" defaultValue={partner?.partner_type || "MECHANIC"}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner" />
                 </SelectTrigger>
@@ -140,28 +149,28 @@ export function PartnerDialog() {
 
           <div className="space-y-2">
             <Label htmlFor="business_name">Nom de l'établissement / Enseigne</Label>
-            <Input id="business_name" name="business_name" placeholder="Garage du Progrès" required />
+            <Input id="business_name" name="business_name" defaultValue={partner?.business_name} placeholder="Garage du Progrès" required />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="manager_name">Nom du Gérant</Label>
-              <Input id="manager_name" name="manager_name" placeholder="Jean Dupont" required />
+              <Input id="manager_name" name="manager_name" defaultValue={partner?.manager_name} placeholder="Jean Dupont" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone">Téléphone</Label>
-              <Input id="phone" name="phone" placeholder="+229 XX XX XX XX" required />
+              <Input id="phone" name="phone" defaultValue={partner?.phone} placeholder="+229 XX XX XX XX" required />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="mobile_money_number">Numéro MoMo (Paiements)</Label>
-              <Input id="mobile_money_number" name="mobile_money_number" placeholder="+229..." />
+              <Input id="mobile_money_number" name="mobile_money_number" defaultValue={partner?.mobile_money_number} placeholder="+229..." />
             </div>
             <div className="space-y-2">
               <Label htmlFor="mobile_money_operator">Opérateur</Label>
-              <Select name="mobile_money_operator" defaultValue="MTN">
+              <Select name="mobile_money_operator" defaultValue={partner?.mobile_money_operator || "MTN"}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner" />
                 </SelectTrigger>
@@ -176,34 +185,34 @@ export function PartnerDialog() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="commission_rate">Taux Commission (%)</Label>
-              <Input id="commission_rate" name="commission_rate" type="number" step="0.1" defaultValue="5" required />
+              <Input id="commission_rate" name="commission_rate" type="number" step="0.1" defaultValue={partner?.commission_rate || "5"} required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="stock_ceiling_amount">Plafond Stock (FCFA)</Label>
-              <Input id="stock_ceiling_amount" name="stock_ceiling_amount" type="number" placeholder="500000" />
+              <Input id="stock_ceiling_amount" name="stock_ceiling_amount" type="number" defaultValue={partner?.stock_ceiling_amount} placeholder="500000" />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="photo_manager">Photo du Gérant</Label>
+              <Label htmlFor="photo_manager">Photo du Gérant {isEdit && "(Optionnel)"}</Label>
               <Input id="photo_manager" name="photo_manager" type="file" accept="image/*" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="photo_storefront">Photo de la Devanture</Label>
+              <Label htmlFor="photo_storefront">Photo de la Devanture {isEdit && "(Optionnel)"}</Label>
               <Input id="photo_storefront" name="photo_storefront" type="file" accept="image/*" />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="address_description">Addresse / Point de repère</Label>
-            <Input id="address_description" name="address_description" placeholder="A côté de la station MRS..." />
+            <Input id="address_description" name="address_description" defaultValue={partner?.address_description} placeholder="A côté de la station MRS..." />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="zone">Zone Géographique</Label>
-              <Input id="zone" name="zone" placeholder="Cotonou / Calavi" />
+              <Input id="zone" name="zone" defaultValue={partner?.zone} placeholder="Cotonou / Calavi" />
             </div>
             <div className="space-y-2">
               <Label>Position GPS</Label>
@@ -229,7 +238,7 @@ export function PartnerDialog() {
 
           <DialogFooter className="pt-4">
             <Button type="submit" disabled={loading} className="w-full bg-[#0B1F3A]">
-              {loading ? "Création en cours..." : "Enregistrer le partenaire"}
+              {loading ? "Enregistrement..." : isEdit ? "Enregistrer les modifications" : "Enregistrer le partenaire"}
             </Button>
           </DialogFooter>
         </form>

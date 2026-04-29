@@ -60,3 +60,49 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
+
+export async function PATCH(req: Request) {
+  try {
+    const data = await req.json()
+    const { id, ...updateData } = data
+
+    const session = await getSession()
+    if (!session) return NextResponse.json({ error: "Non authentifié" }, { status: 401 })
+
+    const oldPartner = await prisma.partner.findUnique({ where: { id } })
+    if (!oldPartner) return NextResponse.json({ error: "Partenaire non trouvé" }, { status: 404 })
+
+    const partner = await prisma.partner.update({
+      where: { id },
+      data: {
+        code: updateData.code,
+        business_name: updateData.business_name,
+        manager_name: updateData.manager_name,
+        phone: updateData.phone,
+        partner_type: updateData.partner_type,
+        address_description: updateData.address_description,
+        zone: updateData.zone,
+        commission_rate: updateData.commission_rate,
+        mobile_money_number: updateData.mobile_money_number,
+        mobile_money_operator: updateData.mobile_money_operator,
+        photo_manager_url: updateData.photo_manager_url,
+        photo_storefront_url: updateData.photo_storefront_url,
+        stock_ceiling_amount: updateData.stock_ceiling_amount,
+      }
+    })
+
+    await logAction(
+      session.userId,
+      'UPDATE_PARTNER',
+      'PARTNER',
+      partner.id,
+      oldPartner,
+      updateData
+    )
+
+    return NextResponse.json(partner)
+  } catch (error: any) {
+    console.error(error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
