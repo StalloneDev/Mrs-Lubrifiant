@@ -8,6 +8,7 @@ import { MapPin, User, Calendar, Plus, MessageSquare } from 'lucide-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { VisitDialog } from '@/components/dashboard/VisitDialog'
+import { VisitDetailDialog } from '@/components/dashboard/VisitDetailDialog'
 
 export default async function VisitsPage() {
   const cookie = cookies().get('session')?.value
@@ -80,7 +81,7 @@ export default async function VisitsPage() {
                   </div>
                 </div>
                 <div className="p-6 border-t md:border-t-0 md:border-l">
-                  <Button variant="ghost" size="sm" className="text-[#C9A961] font-bold">Voir détails</Button>
+                  <VisitDetailDialog visit={visit} />
                 </div>
               </div>
             </Card>
