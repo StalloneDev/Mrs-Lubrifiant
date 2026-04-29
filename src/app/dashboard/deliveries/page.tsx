@@ -62,10 +62,12 @@ export default async function DeliveriesPage() {
           <h1 className="text-2xl font-bold tracking-tight text-[#0B1F3A]">Suivi de Livraison & Transit</h1>
           <p className="text-slate-500">Gérez les expéditions du dépôt central vers le réseau de partenaires.</p>
         </div>
-        <div className="flex gap-2">
-          <ExportCSVButton data={exportData} filename="livraisons_mrs" />
-          <CreateDeliveryDialog />
-        </div>
+        {role !== 'DELIVERY' && (
+          <div className="flex gap-2">
+            <ExportCSVButton data={exportData} filename="livraisons_mrs" />
+            <CreateDeliveryDialog />
+          </div>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
