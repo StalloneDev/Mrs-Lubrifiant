@@ -22,7 +22,10 @@ export default async function PrintInvoicePage({ params }: { params: { id: strin
                     <img src="/logo.png" alt="MRS Logo" className="h-16 w-16 mb-2" />
                     <h1 className="text-2xl font-black text-[#0B1F3A]">MRS BENIN S.A.</h1>
                     <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Distribution de Lubrifiants</p>
-                    <p className="text-[10px] text-slate-400 mt-1">Zone Industrielle, Akpakpa, Cotonou</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Avenue Jean-Paul II, Lot Fn°4808 Les Cocotiers</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Cotonou, Route de L'aeroport</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Tel: +229 21 30 65 47</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Fax: +229 21 30 65 49</p>
                 </div>
                 <div className="text-right">
                     <h2 className="text-4xl font-black text-slate-200 uppercase mb-1">Facture</h2>
@@ -94,9 +97,9 @@ export default async function PrintInvoicePage({ params }: { params: { id: strin
             </div>
 
             <div className="mt-16 pt-8 border-t text-[9px] text-slate-400 text-center">
-                MRS BENIN S.A. - Société Anonyme au capital de 1.000.000.000 FCFA <br />
-                Siège Social : Akpakpa, Cotonou - République du Bénin <br />
-                RCCM RB/COT/07 B 123 - IFU 1234567890123
+                Siège Social : Avenue Jean-Paul II, Lot Fn°4808 Les Cocotiers <br />
+                Cotonou, Route de L'aeroport <br />
+                RC : RB/COT/06/ B 44 - INSAE : 2556106573457 - IFU 3200700025313
             </div>
 
             {/* Print Button */}

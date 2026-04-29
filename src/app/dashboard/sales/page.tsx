@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma'
 import { cookies } from 'next/headers'
 import { decrypt } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
-import { ShoppingCart, Search, TrendingUp, Calendar, ArrowUpRight, Filter, MoreHorizontal } from 'lucide-react'
+import { ShoppingCart, Search, TrendingUp, Calendar, ArrowUpRight, Filter, Eye } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -110,14 +110,14 @@ export default async function SalesPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-bold text-purple-600 uppercase tracking-wider">Total Ventes</p>
-                <h3 className="text-2xl font-black text-[#0B1F3A] mt-1">{sales.length} <span className="text-sm font-medium text-slate-400">Transactions</span></h3>
+                <p className="text-xs font-bold text-purple-600 uppercase tracking-wider">Chiffre d'Affaires Total</p>
+                <h3 className="text-2xl font-black text-[#0B1F3A] mt-1">{totalAmount.toLocaleString()} <span className="text-sm font-medium text-slate-400">FCFA</span></h3>
               </div>
               <div className="h-12 w-12 rounded-2xl bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
                 <ShoppingCart className="h-6 w-6 text-white" />
               </div>
             </div>
-            <p className="text-[10px] text-slate-500 font-medium mt-4">Sur la période sélectionnée</p>
+            <p className="text-[10px] text-slate-500 font-medium mt-4">{sales.length} transaction(s) enregistrée(s)</p>
           </CardContent>
         </Card>
 
@@ -219,9 +219,11 @@ export default async function SalesPage() {
                     <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest leading-none mb-1">Montant Net</p>
                     <p className="text-xl font-black text-[#0B1F3A]">{sale.total_ttc?.toLocaleString()} <span className="text-xs font-bold">FCFA</span></p>
                   </div>
-                  <Button variant="ghost" size="icon" className="rounded-xl hover:bg-slate-50">
-                    <MoreHorizontal className="h-5 w-5 text-slate-300" />
-                  </Button>
+                  <Link href={`/dashboard/sales/${sale.id}`}>
+                    <Button variant="ghost" size="icon" className="rounded-xl hover:bg-[#C9A961]/10" title="Voir les détails">
+                      <Eye className="h-5 w-5 text-[#C9A961]" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </Card>

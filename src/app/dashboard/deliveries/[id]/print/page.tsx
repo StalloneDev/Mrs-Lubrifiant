@@ -37,9 +37,12 @@ export default async function PrintDeliveryPage({ params }: { params: { id: stri
           <p className="text-[10px] uppercase font-black text-slate-400 mb-2">Expéditeur</p>
           <div className="text-sm space-y-1">
             <p className="font-bold">Dépôt Central MRS</p>
-            <p>Zone Industrielle</p>
-            <p>Cotonou, Bénin</p>
-            <p>Tél: +229 21 XX XX XX</p>
+            <p>Avenue Jean-Paul II</p>
+            <p>Lot Fn°4808 Les Cocotiers</p>
+            <p>Cotonou, Route de L'aeroport</p>
+            <p>Tel: +229 21 30 65 47</p>
+            <p>Fax: +229 21 30 65 49</p>
+
           </div>
         </div>
         <div className="bg-slate-50 p-4 rounded-lg">
@@ -83,7 +86,7 @@ export default async function PrintDeliveryPage({ params }: { params: { id: stri
       <div className="grid grid-cols-2 gap-8 pt-12 border-t border-dashed mt-auto">
         <div className="text-center h-32 border border-slate-200 rounded p-2 flex flex-col justify-between">
           <p className="text-xs font-bold uppercase text-slate-400">Cachet & Signature MRS</p>
-          <div className="text-[10px] italic text-slate-300">Emis par le système central</div>
+          <div className="text-[10px] italic text-slate-300">Lu et approuvé</div>
         </div>
         <div className="text-center h-32 border border-slate-200 rounded p-2 flex flex-col justify-between">
           <p className="text-xs font-bold uppercase text-slate-400">Accusé de réception Partenaire</p>
@@ -92,7 +95,7 @@ export default async function PrintDeliveryPage({ params }: { params: { id: stri
       </div>
 
       <div className="mt-16 pt-8 border-t text-[9px] text-slate-400 text-center">
-        MRS BENIN S.A. - RC : RB/COT/07 B 123 - IFU 1234567890123 <br />
+        MRS BENIN S.A. - RC : RB/COT/06 B 44 - INSAE : 2556106573457 - IFU 3200700025313 <br />
         Document généré électroniquement - Valide sans signature manuscrite pour le suivi de stock consignation.
       </div>
 

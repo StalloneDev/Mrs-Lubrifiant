@@ -66,21 +66,26 @@ Ce manuel détaille le **flux de données** opérationnel. Suivez ces étapes av
 ## 💰 ÉTAPE 3 : Ventes & Recouvrement
 *Génération du Chiffre d'Affaires.*
 
-### 3.1 Déclarer une Vente de Terrain
-- **Action** : Menu "Partenaires" ➔ Sélectionner "Garage Moderne Cotonou" ➔ Bouton "Déclarer une Vente".
-- **Données Test** :
+### 3.1 Déclarer une Vente de Terrain (par Inventaire)
+> ⚠️ **La déclaration se fait dans le menu `Ventes`, PAS dans Partenaires.**
+> Le principe est simple : vous comptez le stock restant chez le partenaire, l'application calcule automatiquement ce qui a été vendu.
+
+- **Action** : Menu **`Ventes`** ➔ Bouton doré **"🛒 Nouvelle Vente"** (en haut à droite).
+- **Vous arrivez sur la page `/dashboard/sales/new`** :
+- **Champ `Partenaire`** : Sélectionner `Garage Moderne Cotonou`
+- **Champ `Inventaire restant`** (ex: vous comptez 45 bidons sur place) :
     - `Produit` : MRS Synthétique Premium 5L
-    - `Quantité` : 5
-    - `Prix de vente appliqué` : 25 000
-    - `Mode de paiement` : Crédit (30 jours)
-- **Résultat** : 
-    - Le stock du partenaire descend de 50 à 45.
-    - Une Facture `FAC-XXX` est créée.
-    - Une commission de 6 250 FCFA (5%) est réservée pour Paul ZINSOU.
+    - `Stock restant compté` : 45 (Pour chaque produit, vous saisissez le stock restant compté (pas la quantité vendue))
+- **`Calcul automatique`** : 50 (stock précédent) – 45 (compté) = **5 vendus**
+- **Champ `Mode de paiement`** : Crédit (30 jours)
+- **Résultat** :
+    - Le stock du partenaire descend de 50 à 45 ✅
+    - Une Facture `FAC-XXX` est créée (5 × 25 000 = 125 000 FCFA) ✅
+    - Une commission de 6 250 FCFA (5%) est réservée pour le commercial assigné ✅
 
 ### 3.2 Enregistrer un Règlement
-- **Action** : Menu "Encaissements" ➔ Sélectionner la facture ➔ Ajouter un paiement.
-- **Données Test** : `Montant` : 125 000 | `Référence` : Chèque #882
+- **Action** : Menu **`Encaissements`** ➔ Trouver la facture ➔ Bouton **"Ajouter un paiement"**.
+- **Données Test** : `Montant` : 125 000 | `Référence` : Mobile Money #12345
 - **Résultat** : La facture est marquée comme **Payée**. Le solde du partenaire est mis à jour.
 
 ---
