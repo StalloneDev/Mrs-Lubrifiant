@@ -67,7 +67,7 @@ export default async function SaleDetailsPage({ params }: { params: { id: string
                     <div className="flex items-center gap-2">
                         <p className="text-xs font-bold text-slate-500">Mode de paiement : </p>
                         <Badge variant="outline" className="font-bold border-green-200 text-green-700 bg-green-50 uppercase tracking-wider">
-                            {sale.payment_method}
+                            {sale.sale_type.replace('_', ' ')}
                         </Badge>
                     </div>
                 </div>
