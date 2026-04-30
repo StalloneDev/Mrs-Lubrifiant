@@ -311,17 +311,63 @@ export default async function DashboardPage() {
               <p className="text-slate-500 italic">Vous n'avez pas de livraison prévue.</p>
             ) : (
               myDeliveries.map(d => (
-                <Link key={d.id} href={`/dashboard/deliveries/${d.id}`}>
-                  <Card className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-orange-500">
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div>
-                        <p className="font-bold">{d.partner.business_name}</p>
-                        <p className="text-xs text-slate-500">{d.partner.address_description}</p>
+                <div key={d.id} className="relative">
+                  <Card className="hover:shadow-md transition-all border-l-4 border-l-orange-500 overflow-hidden">
+                    <CardContent className="p-0">
+                      <div className="flex flex-col sm:flex-row">
+                        {/* Storefront Photo Thumbnail */}
+                        {d.partner.photo_storefront_url && (
+                          <div className="w-full sm:w-32 h-32 sm:h-auto relative bg-slate-100 flex-shrink-0">
+                            <img
+                              src={d.partner.photo_storefront_url}
+                              alt="Devanture"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+
+                        <div className="p-4 flex-1 space-y-3">
+                          <div className="flex justify-between items-start">
+                            <Link href={`/dashboard/deliveries/${d.id}`} className="hover:underline flex-1">
+                              <p className="font-bold text-lg text-[#0B1F3A]">{d.partner.business_name}</p>
+                            </Link>
+                            <Badge variant="secondary" className="bg-orange-50 text-orange-700">À LIVRER</Badge>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                            <div className="flex items-center gap-2 text-slate-600">
+                              <Users className="h-4 w-4" />
+                              <span>Gérant: {d.partner.manager_name}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-slate-600">
+                              <MapPin className="h-4 w-4" />
+                              <span>{d.partner.address_description || 'Pas d\'adresse'}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2 pt-2">
+                            {d.partner.gps_lat && d.partner.gps_lng && (
+                              <Button asChild variant="outline" size="sm" className="bg-white border-orange-200 text-orange-700 hover:bg-orange-50">
+                                <a
+                                  href={`https://www.google.com/maps/search/?api=1&query=${d.partner.gps_lat},${d.partner.gps_lng}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <MapPin className="mr-2 h-4 w-4" /> Navigation GPS
+                                </a>
+                              </Button>
+                            )}
+                            <Button asChild variant="ghost" size="sm" className="text-slate-500 hover:text-[#0B1F3A]">
+                              <Link href={`/dashboard/deliveries/${d.id}`}>
+                                <Eye className="mr-2 h-4 w-4" /> Voir détails
+                              </Link>
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                      <Badge variant="secondary" className="bg-orange-50 text-orange-700">À LIVRER</Badge>
                     </CardContent>
                   </Card>
-                </Link>
+                </div>
               ))
             )}
           </div>
