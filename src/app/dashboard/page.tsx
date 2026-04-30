@@ -338,8 +338,16 @@ export default async function DashboardPage() {
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                             <div className="flex items-center gap-2 text-slate-600">
-                              <Users className="h-4 w-4" />
-                              <span>Gérant: {d.partner.manager_name}</span>
+                              {d.partner.photo_manager_url ? (
+                                <img
+                                  src={d.partner.photo_manager_url}
+                                  alt="Gérant"
+                                  className="h-12 w-12 rounded-full object-cover border border-slate-200"
+                                />
+                              ) : (
+                                <Users className="h-12 w-12" />
+                              )}
+                              <span className="font-medium">Gérant: {d.partner.manager_name}</span>
                             </div>
                             <div className="flex items-center gap-2 text-slate-600">
                               <MapPin className="h-4 w-4" />
