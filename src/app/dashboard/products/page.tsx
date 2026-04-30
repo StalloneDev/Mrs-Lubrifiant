@@ -21,6 +21,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card'
 import { ProductDialog } from '@/components/dashboard/ProductDialog'
 import { ProductStatusToggle } from '@/components/dashboard/ProductStatusToggle'
+import { ZoomableImage } from '@/components/dashboard/ZoomableImage'
 
 export default async function ProductsPage() {
   const products = await prisma.product.findMany({
@@ -82,9 +83,12 @@ export default async function ProductsPage() {
                   <TableCell className="font-mono font-medium">{product.code}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="rounded-lg bg-blue-50 p-2">
-                        <Droplets className="h-4 w-4 text-blue-600" />
-                      </div>
+                      <ZoomableImage
+                        src={product.photo_url || ""}
+                        alt={product.name}
+                        fallbackIcon={<Droplets className="h-4 w-4 text-blue-600" />}
+                        triggerClassName="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0"
+                      />
                       <Link href={`/dashboard/products/${product.id}`} className="font-semibold hover:text-blue-600 hover:underline">
                         {product.name}
                       </Link>
@@ -127,9 +131,12 @@ export default async function ProductsPage() {
             <CardContent className="p-4">
               <div className="flex justify-between items-start mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-blue-50 p-2">
-                    <Droplets className="h-5 w-5 text-blue-600" />
-                  </div>
+                  <ZoomableImage
+                    src={product.photo_url || ""}
+                    alt={product.name}
+                    fallbackIcon={<Droplets className="h-5 w-5 text-blue-600" />}
+                    triggerClassName="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0"
+                  />
                   <div>
                     <h3 className="font-bold">{product.name}</h3>
                     <p className="text-xs text-slate-500 font-mono">{product.code}</p>
