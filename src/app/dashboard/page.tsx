@@ -23,6 +23,7 @@ import { fr } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { ZoomableImage } from '@/components/dashboard/ZoomableImage'
 
 export default async function DashboardPage() {
   const cookie = cookies().get('session')?.value
@@ -319,13 +320,11 @@ export default async function DashboardPage() {
                       <div className="flex flex-col sm:flex-row">
                         {/* Storefront Photo Thumbnail */}
                         {d.partner.photo_storefront_url && (
-                          <div className="w-full sm:w-32 h-32 sm:h-auto relative bg-slate-100 flex-shrink-0">
-                            <img
-                              src={d.partner.photo_storefront_url}
-                              alt="Devanture"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
+                          <ZoomableImage
+                            src={d.partner.photo_storefront_url}
+                            alt="Devanture"
+                            triggerClassName="w-full sm:w-32 h-32 sm:h-auto bg-slate-100 flex-shrink-0"
+                          />
                         )}
 
                         <div className="p-4 flex-1 space-y-3">
@@ -339,13 +338,13 @@ export default async function DashboardPage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                             <div className="flex items-center gap-2 text-slate-600">
                               {d.partner.photo_manager_url ? (
-                                <img
+                                <ZoomableImage
                                   src={d.partner.photo_manager_url}
                                   alt="Gérant"
-                                  className="h-12 w-12 rounded-full object-cover border border-slate-200"
+                                  triggerClassName="h-6 w-6 rounded-full border border-slate-200"
                                 />
                               ) : (
-                                <Users className="h-12 w-12" />
+                                <Users className="h-4 w-4" />
                               )}
                               <span className="font-medium">Gérant: {d.partner.manager_name}</span>
                             </div>
