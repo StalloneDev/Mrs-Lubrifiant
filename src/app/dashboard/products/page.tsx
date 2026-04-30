@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma'
 import { Button } from '@/components/ui/button'
-import { Plus, Search, Filter, MoreVertical, Package, Droplets } from 'lucide-react'
+import { Plus, Search, Filter, MoreVertical, Package, Droplets, Printer } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
@@ -34,7 +34,14 @@ export default async function ProductsPage() {
           <h1 className="text-2xl font-bold tracking-tight">Catalogue Produits</h1>
           <p className="text-slate-500">Gérez vos lubrifiants MRS et leurs prix.</p>
         </div>
-        <ProductDialog />
+        <div className="flex items-center gap-2">
+          <Link href="/dashboard/products/print">
+            <Button variant="outline" className="bg-white">
+              <Printer className="mr-2 h-4 w-4" /> Exporter PDF
+            </Button>
+          </Link>
+          <ProductDialog />
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
