@@ -291,7 +291,7 @@ export default async function DashboardPage() {
   // 3. DELIVERY VIEW
   if (role === 'DELIVERY') {
     const myDeliveries = await prisma.delivery.findMany({
-      where: { assigned_delivery_user_id: userId, status: { in: ['ASSIGNED', 'IN_PROGRESS'] } },
+      where: { assigned_delivery_user_id: userId, status: { in: ['CREATED', 'ASSIGNED', 'IN_PROGRESS'] } },
       include: { partner: true },
       orderBy: { target_date: 'asc' }
     })
