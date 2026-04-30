@@ -11,7 +11,9 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  MapPin,
+  Eye
 } from 'lucide-react'
 import { SalesChart } from '@/components/dashboard/SalesChart'
 import { Badge } from '@/components/ui/badge'
